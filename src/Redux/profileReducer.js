@@ -4,10 +4,10 @@ const UPDATE_NEW_POST_TEXT = "UPDATE-NEW-POST-TEXT";
 let intialState = {
     myPostData: [
         {id: 1, message: "How are you?", likeCount: 15},
-        {id: 1, message: "It's my first message", likeCount: 20},
-        {id: 1, message: "It's a fail", likeCount: 30},
-        {id: 1, message: "Hi, World", likeCount: 25},
-        {id: 1, message: "You are welcome", likeCount: 1}
+        {id: 2, message: "It's my first message", likeCount: 20},
+        {id: 3, message: "It's a fail", likeCount: 30},
+        {id: 4, message: "Hi, World", likeCount: 25},
+        {id: 5, message: "You are welcome", likeCount: 1}
 
     ],
     dialogsData: [
@@ -40,15 +40,19 @@ const profileReducer = (state = intialState, action) => {
                 message: state.newPostText,
                 likeCount: 10
             };
-            state.myPostData.push(newPost);
-            state.newPostText = '';
-            break;
-        case UPDATE_NEW_POST_TEXT:
-            state.newPostText = action.newText;
-            break;
-    };
+           return  {...state,
+               myPostData: [...state.myPostData, newPost],
+               newPostText: ""
+           };
 
-    return state;
+        case UPDATE_NEW_POST_TEXT:
+            return {...state,
+                newPostText: action.newText
+            };
+
+        default:
+            return state;
+    }
 }
 
 export const addPostActionCreator = () => {

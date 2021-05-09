@@ -1,4 +1,4 @@
-const ADD_MESSAGE = "ADD-MESSAGE";
+const SEND_MESSAGE = "SEND-MESSAGE";
 const UPDATE_NEW_MESSAGE_TEXT = "UPDATE-NEW-MESSAGE-TEXT";
 
 let intialState = {
@@ -9,40 +9,58 @@ let intialState = {
         {id: 4, message: "Bla-bla"},
         {id: 5, message: "He-He"}
     ],
+    dialogsData: [
+        {id: 1, name: "Ivan", icon: "https://pixelbox.ru/wp-content/uploads/2020/12/ava-vk-cats-90.jpg"},
+        {
+            id: 2,
+            name: "Sergey",
+            icon: "https://avatars.mds.yandex.net/get-zen_doc/1641049/pub_5ec9179b6507207c615f04c9_5ec91b8a44070e5cfc4904c7/scale_1200"
+        },
+        {id: 3, name: "Andrey", icon: "https://sun9-55.userapi.com/c845123/v845123437/1f636b/uU_rgyMrFYQ.jpg"},
+        {
+            id: 4,
+            name: "Deniz",
+            icon: "https://i.pinimg.com/originals/37/11/eb/3711ebc20a73570f735a4decb18f506b.jpg"
+        },
+        {
+            id: 5,
+            name: "Ruslan",
+            icon: "https://s3.eu-central-1.amazonaws.com/river-talks/uploads/photos/2020/11/sngine_9a35e33a61d58328f658d86ebc311fef.jpg"
+        }
+    ],
     newMessageText: ''
 };
 
 const messageReducer = (state = intialState, action) => {
     switch (action.type) {
-        case ADD_MESSAGE:
-            let newMessage = {
-                id: 6,
-                message: state.newMessageText,
+        case SEND_MESSAGE:
+            let newMessage = state.newMessageText;
+            return {
+                ...state,
+                messageData: [...state.messageData, {id: 6, message: newMessage}],
+                newMessageText: ""
 
             };
-            state.messageData.push(newMessage);
-            state.newMessageText = '';
-            break;
         case UPDATE_NEW_MESSAGE_TEXT:
-            state.newMessageText = action.newMessageText;
-            break;
-    }
+            return {
+                ...state,
+                newMessageText: action.newMessage
+            };
 
-    return state;
+        default:
+            return state;
+    }
 };
 
-
-export const addMessageActionCreator = () => {
-
+export const sendMessageCreator = () => {
     return {
-        type: ADD_MESSAGE
+        type: SEND_MESSAGE
     }
 };
-export const updateNewMessageTextActionCreator = (textMessage) => {
-
+export const updateNewMessageBodyCreator = (body) => {
     return {
         type: UPDATE_NEW_MESSAGE_TEXT,
-        newMessageText: textMessage
+        newMessage: body
     }
 };
 

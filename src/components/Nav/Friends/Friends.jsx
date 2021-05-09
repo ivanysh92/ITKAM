@@ -4,9 +4,9 @@ import FriendsItem from "./FriendsItem/FriendsItem";
 
 
 const Friends = (props) => {
-
     let friendsElements = props.friendsData
         .map(userInf => <FriendsItem name={userInf.name} id={userInf.id} icon={userInf.icon}/>)
+
 
     return (
         <div className={s.friendsBar}>
