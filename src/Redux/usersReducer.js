@@ -1,22 +1,29 @@
+import {userAPI} from "../api/api";
+
 const FOLLOW = "FOLLOW";
 const UNFOLLOW = "UNFOLLOW";
-const SET_USERS = "SET_USERS"
+const SET_USERS = "SET_USERS";
+const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
+const SET_TOTAL_USERS_COUNT = "SET_TOTAL_USERS_COUNT"
+const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
+const TOGGLE_IS_FOLLOWING_PROGRESS = "TOGGLE_IS_FOLLOWING_PROGRESS";
 
 let intialState = {
-    users: [
-        // {id: 1, photoURL: "https://xenforo.com/community/data/avatars/l/137/137455.jpg?1472027263", followed: false, fullname: "Boris", status: "I am a programist", location: {city: "Minsk", country: "Belarus"}},
-        // {id: 2, photoURL: "https://yt3.ggpht.com/ytc/AAUvwnib-IWbaLxxFSm1uf2Kxk5u_K9diJ6K4wWR8hwflw=s900-c-k-c0x00ffffff-no-rj", followed: true, fullname: "Serj", status: "I am a WebDeveloper", location: {city: "Moscow", country: "Russia"}},
-        // {id: 3, photoURL: "https://sun9-68.userapi.com/c851536/v851536958/e5aa5/ybMSyR_PShY.jpg", followed: false,  fullname: "Nikifor", status: "I am a Full-Stuck", location: {city: "Kiev", country: "Ukraine"}},
-        // {id: 4, photoURL: "https://yt3.ggpht.com/a/AATXAJxTy7XfNWpfajyow34W5xYqRirqjx2roiPTCiDMmA=s900-c-k-c0xffffffff-no-rj-mo", followed: true, fullname: "Antony", status: "I am a bandit", location: {city: "Bishkek", country: "Kyrgyzstan"}},
-    ]
+    users: [],
+    pageSize: 100,
+    totalUserCount: 0,
+    currentPage: 1,
+    isFetching: true,
+    followingInProgress: []
+
 };
 
 const usersReducer = (state = intialState, action) => {
     switch (action.type) {
         case FOLLOW:
-            return  {
+            return {
                 ...state,
-                users: state.users.map(u=> {
+                users: state.users.map(u => {
                     if (u.id === action.userId) {
                         return {...u, followed: true}
                     }
@@ -25,9 +32,9 @@ const usersReducer = (state = intialState, action) => {
             }
 
         case UNFOLLOW:
-            return  {
+            return {
                 ...state,
-                users: state.users.map(u=> {
+                users: state.users.map(u => {
                     if (u.id === action.userId) {
                         return {...u, followed: false}
                     }
@@ -35,34 +42,77 @@ const usersReducer = (state = intialState, action) => {
                 })
             }
 
-        case SET_USERS:
-            return {...state,
-                users: [...state.users, ...action.users]
+        case SET_USERS: {
+            return {
+                ...state,
+                users: [...action.users]
             }
+        }
+
+        case SET_CURRENT_PAGE: {
+            return {...state, currentPage: action.currentPage}
+        }
+
+        case SET_TOTAL_USERS_COUNT: {
+            return {...state, totalUserCount: action.count}
+        }
+        case TOGGLE_IS_FETCHING: {
+            return {...state, isFetching: action.isFetching}
+        }
+        case TOGGLE_IS_FOLLOWING_PROGRESS: {
+            return {
+                ...state,
+                followingIsProgress: action.isFetching
+                    ? [...state.followingInProgress, action.userId]
+                    : state.followingInProgress.filter(id => id != action.userId)
+            }
+        }
 
         default:
             return state;
     }
 }
 
-export const followAC = (userId) => {
+export const follow = (userId) => {
     return {
         type: FOLLOW,
         userId
     }
 };
-export const unfollowAC = (userId) => {
+export const unfollow = (userId) => {
     return {
         type: UNFOLLOW,
         userId
     }
 };
-
-export const setUsersAC = (users) => {
+export const setUsers = (users) => {
     return {
         type: SET_USERS,
         users
 
     }
 };
+export const setCurrentPage = (currentPage) => ({type: SET_CURRENT_PAGE, currentPage})
+export const setTotalUserCount = (totalUserCount) => ({type: SET_TOTAL_USERS_COUNT, count: totalUserCount})
+export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFetching})
+export const toggleIsFollowingProgress = (isFetching, userId) => ({
+    type: TOGGLE_IS_FOLLOWING_PROGRESS,
+    isFetching,
+    userId
+})
+
+export const getUsersThunkCreator = (currentPage, pageSize) => {
+    return (dispatch) => {
+        dispatch(toggleIsFetching(true));
+
+        userAPI.getUsers(currentPage, pageSize)
+            .then(data => {
+                dispatch(toggleIsFetching(false));
+                dispatch(setUsers(data.items));
+                dispatch(setTotalUserCount(data.totalCount));
+            });
+    }
+}
+
+
 export default usersReducer;
