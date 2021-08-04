@@ -1,5 +1,4 @@
 const SEND_MESSAGE = "SEND-MESSAGE";
-const UPDATE_NEW_MESSAGE_TEXT = "UPDATE-NEW-MESSAGE-TEXT";
 
 let intialState = {
     messageData: [
@@ -28,40 +27,28 @@ let intialState = {
             icon: "https://s3.eu-central-1.amazonaws.com/river-talks/uploads/photos/2020/11/sngine_9a35e33a61d58328f658d86ebc311fef.jpg"
         }
     ],
-    newMessageText: ''
 };
 
 const messageReducer = (state = intialState, action) => {
     switch (action.type) {
         case SEND_MESSAGE:
-            let newMessage = state.newMessageText;
+            let newMessage = action.newMessageBody;
             return {
                 ...state,
                 messageData: [...state.messageData, {id: 6, message: newMessage}],
-                newMessageText: ""
 
             };
-        case UPDATE_NEW_MESSAGE_TEXT:
-            return {
-                ...state,
-                newMessageText: action.newMessage
-            };
-
         default:
             return state;
     }
 };
 
-export const sendMessageCreator = () => {
+export const sendMessageCreator = (newMessageBody) => {
     return {
-        type: SEND_MESSAGE
+        type: SEND_MESSAGE,
+        newMessageBody
     }
 };
-export const updateNewMessageBodyCreator = (body) => {
-    return {
-        type: UPDATE_NEW_MESSAGE_TEXT,
-        newMessage: body
-    }
-};
+
 
 export default messageReducer;
