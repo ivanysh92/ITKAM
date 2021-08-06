@@ -5,6 +5,7 @@ import {maxLengthCreator, minLengthCreator, requiredField} from "../Utils/Valida
 import {login} from "../Redux/authReducer";
 import {connect} from "react-redux";
 import {Redirect} from "react-router-dom";
+import styles from "../components/common/FormsControls/FormsControls.module.css"
 
 const maxLength10 = maxLengthCreator(15);
 const minLength6 = minLengthCreator(6);
@@ -31,6 +32,9 @@ const LoginForm = (props) => {
                        name={"rememberMe"}
                        component={Input}/> remember me
             </div>
+            {props.error && <div className={styles.formsSummaryError}>
+                {props.error}
+            </div>}
             <div>
                 <button>Login</button>
             </div>
